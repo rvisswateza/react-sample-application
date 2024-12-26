@@ -1,10 +1,8 @@
-'use client'
-
 import { InputText } from 'primereact/inputtext'
-import React, { useEffect, useState } from 'react'
 import pythagoreanMapping from '../data/pythagoreanMapping.json';
 import chaldeanMapping from '../data/chaldeanMapping.json';
 import { Badge } from 'primereact/badge';
+import { useEffect, useState } from 'react';
 
 interface CalculationResult {
     vowels: number;
