@@ -8,6 +8,8 @@ import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 const client = generateClient<Schema>();
 
@@ -15,6 +17,7 @@ type Name = Schema["Names"]["type"];
 
 const NamesTable = () => {
     const [names, setNames] = useState<Name[]>([]);
+    const [viewName, setViewName] = useState<Name | null>(null);
     const [filters, setFilters] = useState({
         global: { value: '', matchMode: FilterMatchMode.CONTAINS },
         id: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
@@ -48,7 +51,7 @@ const NamesTable = () => {
         setGlobalFilterValue(value);
     };
 
-    const renderHeader = () => {
+    const tableHeader = () => {
         return (
             <div className="flex justify-content-between">
                 <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined onClick={clearFilters} />
@@ -58,6 +61,46 @@ const NamesTable = () => {
                 </IconField>
             </div>
         );
+    };
+
+    const actionColumnBody = (name: Name) => {
+        return <div className="flex">
+            <Button
+                className="mx-1"
+                icon="pi pi-eye"
+                severity="info"
+                outlined
+                onClick={() => setViewName(name)}
+            />
+            <Button
+                className="mx-1"
+                icon="pi pi-trash"
+                severity="danger"
+                outlined
+                onClick={() => deleteName(name.id)}
+            />
+        </div>
+    }
+
+    const acceptDeletion = (name: string) => {
+        client.models.Names.delete({id: name})
+        setNames(names.filter((item) => item.id !== name))
+        return;
+    };
+
+    const rejectDeletion = () => {
+        return;
+    };
+    
+    const deleteName = (name: string) => {
+        confirmDialog({
+            message: `Are you sure you want to delete ${name}?`,
+            header: 'Confirmation',
+            icon: 'pi pi-exclamation-triangle',
+            defaultFocus: 'accept',
+            accept: () => acceptDeletion(name),
+            reject: rejectDeletion
+        });
     };
 
     const clearFilters = () => {
@@ -77,16 +120,53 @@ const NamesTable = () => {
         setGlobalFilterValue("");
     };
 
-    const header = renderHeader();
-
     return (
         <div className="">
-            <DataTable value={names} paginator rows={100} rowsPerPageOptions={[10,25,50,100]} filters={filters} globalFilterFields={["id", "tags"]} header={header} emptyMessage="No names found.">
-                <Column field="id" header="Name" style={{ maxWidth: '50%' }} />
-                <Column field="chaldeanTotal" header="Chaldean Total" style={{ maxWidth: '10%' }} />
-                <Column field="pythagoreanTotal" header="Pythagorean Total" style={{ maxWidth: '10%' }} />
-                <Column field="chaldeanActual" header="Chaldean Actual" style={{ maxWidth: '10%' }} />
-                <Column field="pythagoreanActual" header="Pythagorean Actual" style={{ maxWidth: '10%' }} />
+            <ConfirmDialog />
+            <Dialog onHide={() => setViewName(null)} visible={!!viewName} style={{ width: "50%" }} header="Name Details">
+                {viewName && (
+                    <div className="flex flex-column gap-2">
+                        <div>
+                            <strong>Name:</strong> {viewName.id}
+                        </div>
+                        <div>
+                            <strong>Tags:</strong> {viewName.tags.join(", ")}
+                        </div>
+                        <div>
+                            <strong>Chaldean Total:</strong> {viewName.chaldeanTotal}
+                        </div>
+                        <div>
+                            <strong>Pythagorean Total:</strong> {viewName.pythagoreanTotal}
+                        </div>
+                        <div>
+                            <strong>Chaldean Actual:</strong> {viewName.chaldeanActual}
+                        </div>
+                        <div>
+                            <strong>Pythagorean Actual:</strong> {viewName.pythagoreanActual}
+                        </div>
+                        <div>
+                            <strong>Chaldean Vowels:</strong> {viewName.chaldeanVowels}
+                        </div>
+                        <div>
+                            <strong>Pythagorean Vowels:</strong> {viewName.pythagoreanVowels}
+                        </div>
+                        <div>
+                            <strong>Chaldean Consonants:</strong> {viewName.chaldeanConsonants}
+                        </div>
+                        <div>
+                            <strong>Pythagorean Consonants:</strong> {viewName.pythagoreanConsonants}
+                        </div>
+                    </div>
+                )}
+            </Dialog>
+
+            <DataTable value={names} paginator rows={100} stripedRows showGridlines rowsPerPageOptions={[10, 25, 50, 100]} filters={filters} globalFilterFields={["id", "tags"]} header={tableHeader} emptyMessage="No names found.">
+                <Column field="id" header="Name" style={{ width: '50%' }} />
+                <Column field="chaldeanTotal" header="Chaldean Total" style={{ width: '10%' }} />
+                <Column field="pythagoreanTotal" header="Pythagorean Total" style={{ width: '10%' }} />
+                <Column field="chaldeanActual" header="Chaldean Actual" style={{ width: '10%' }} />
+                <Column field="pythagoreanActual" header="Pythagorean Actual" style={{ width: '10%' }} />
+                <Column field="id" header="Actions" style={{ width: '10%' }} body={actionColumnBody} />
             </DataTable>
         </div>
     );

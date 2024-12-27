@@ -7,6 +7,7 @@ import type { Schema } from "../../amplify/data/resource.ts";
 import { generateClient } from "aws-amplify/data";
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
+import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
 
 const client = generateClient<Schema>();
 
@@ -54,6 +55,17 @@ const Calculator = () => {
             </div>
         )
     }
+
+    const onTagChange = (e: CheckboxChangeEvent) => {
+        let updatedTags = [...selectedTags];
+
+        if (e.checked)
+            updatedTags.push(e.value);
+        else
+            updatedTags.splice(updatedTags.indexOf(e.value), 1);
+
+        setSelectedTags(updatedTags);
+    };
 
     const cellStyle = "my-1 align-items-center justify-content-center h-2rem"
 
@@ -132,12 +144,12 @@ const Calculator = () => {
     }
 
     async function saveNewName(name: string, tags: string[], pythagoreanValues: CalculationResult, chaldeanValues: CalculationResult) {
-        if(!name || (name && name==='')){
+        if (!name || (name && name === '')) {
             nameRef?.current?.focus();
             return;
         }
 
-        if(!tags || (tags && tags.length===0)){
+        if (!tags || (tags && tags.length === 0)) {
             tagsRef?.current?.focus();
             return;
         }
@@ -155,12 +167,12 @@ const Calculator = () => {
             chaldeanActual: chaldeanValues.actual,
         }
 
-        const existingRecord = await client.models.Names.get({id: name});
+        const existingRecord = await client.models.Names.get({ id: name });
 
-        if(existingRecord.data){
+        if (existingRecord.data) {
             await client.models.Names.update(input);
         }
-        else{
+        else {
             await client.models.Names.create(input);
         }
 
@@ -180,20 +192,20 @@ const Calculator = () => {
         <div className='flex flex-column m-2 p-2 justify-content-center shadow-3 border-round-md surface-100' >
             <label className='white-space-nowrap'>Enter name: </label>
             <div className='flex align-items-center'>
-                <InputText 
-                    className='w-full mt-2' 
-                    style={{ letterSpacing: "2px" }} 
-                    value={name} 
-                    onChange={(e) => { 
+                <InputText
+                    className='w-full mt-2'
+                    style={{ letterSpacing: "2px" }}
+                    value={name}
+                    onChange={(e) => {
                         setSaveDisabled(false);
                         setName(e.target.value.toUpperCase());
                     }}
                     ref={nameRef}
                 />
                 <Badge
-                    className='mt-2 ml-2' 
-                    value={nameLength} 
-                    size="large" 
+                    className='mt-2 ml-2'
+                    value={nameLength}
+                    size="large"
                 />
             </div>
             <div className='mt-2 flex w-full p-2 border-round-md overflow-auto'>
@@ -243,22 +255,21 @@ const Calculator = () => {
                     </div>
                 ))}
             </div>
-            <div className='mt-2 flex w-full p-2'>
-                <MultiSelect
-                    value={selectedTags}
-                    options={tags}
-                    onChange={(e) => {
-                        setSaveDisabled(false);
-                        setSelectedTags(e.value);
-                    }}
-                    placeholder="Select Tags"
-                    showClear={true}
-                    itemTemplate={tagSelectItemTemplate}
-                    panelFooterTemplate={tagSelectFooterTemplate}
-                    className="w-full md:w-20rem"
-                    display="chip"
-                    ref={tagsRef}
-                />
+            <div className='mt-2 flex w-full p-2 justify-content-between align-items-center'>
+                <div className="flex flex-wrap mt-2">
+                    <label className='pr-2'>Tags:</label>
+                    {tags.map(tag => (
+                        <div key={tag} className="flex align-items-center mr-3">
+                            <Checkbox
+                                inputId={tag}
+                                value={tag}
+                                onChange={onTagChange}
+                                checked={selectedTags.includes(tag)}
+                            />
+                            <label htmlFor={tag} className="ml-2">{tag}</label>
+                        </div>
+                    ))}
+                </div>
                 <Button
                     className='ml-2'
                     label='Save'

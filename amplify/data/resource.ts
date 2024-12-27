@@ -3,8 +3,8 @@ import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 const schema = a.schema({
   Names: a
     .model({
-      id: a.id(),
-      tags: a.string().array(),
+      id: a.id().required(),
+      tags: a.string().array().required(),
       pythagoreanVowels: a.integer().required(),
       chaldeanVowels: a.integer().required(),
       pythagoreanConsonants: a.integer().required(),
