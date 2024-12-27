@@ -80,7 +80,7 @@ const NamesTable = () => {
     return (
         <div className="card">
             <DataTable value={names} paginator rows={10} filters={filters} globalFilterFields={["id", "tags"]} header={header} emptyMessage="No names found.">
-                <Column field="id" header="ID" filter filterPlaceholder="Search by ID" style={{ minWidth: '12rem' }} />
+                <Column field="id" header="Name" filter filterPlaceholder="Search by ID" style={{ minWidth: '12rem' }} />
                 <Column field="tags" header="Tags" filter filterPlaceholder="Search by Tags" style={{ minWidth: '12rem' }} />
                 <Column field="pythagoreanVowels" header="Pythagorean Vowels" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />
                 <Column field="chaldeanVowels" header="Chaldean Vowels" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />

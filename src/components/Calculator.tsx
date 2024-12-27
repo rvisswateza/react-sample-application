@@ -266,7 +266,7 @@ const Calculator = () => {
                     disabled={saveDisabled}
                     onClick={() => {
                         setSaveDisabled(true);
-                        saveNewName(name, tags, pythagoreanValues, chaldeanValues)
+                        saveNewName(name, selectedTags, pythagoreanValues, chaldeanValues)
                     }}
                 />
             </div>
