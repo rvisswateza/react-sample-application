@@ -81,17 +81,12 @@ const NamesTable = () => {
 
     return (
         <div className="">
-            <DataTable value={names} paginator rows={10} filters={filters} globalFilterFields={["id", "tags"]} header={header} emptyMessage="No names found.">
-                <Column field="id" header="Name" filter filterPlaceholder="Search by ID" style={{ minWidth: '12rem' }} />
-                <Column field="tags" header="Tags" filter filterPlaceholder="Search by Tags" style={{ minWidth: '12rem' }} />
-                <Column field="pythagoreanVowels" header="Pythagorean Vowels" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />
-                <Column field="chaldeanVowels" header="Chaldean Vowels" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />
-                <Column field="pythagoreanConsonants" header="Pythagorean Consonants" filter filterPlaceholder="Equals" style={{ minWidth: '16rem' }} />
-                <Column field="chaldeanConsonants" header="Chaldean Consonants" filter filterPlaceholder="Equals" style={{ minWidth: '16rem' }} />
-                <Column field="pythagoreanTotal" header="Pythagorean Total" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />
-                <Column field="chaldeanTotal" header="Chaldean Total" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />
-                <Column field="pythagoreanActual" header="Pythagorean Actual" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />
-                <Column field="chaldeanActual" header="Chaldean Actual" filter filterPlaceholder="Equals" style={{ minWidth: '14rem' }} />
+            <DataTable value={names} paginator rows={100} rowsPerPageOptions={[10,25,50,100]} filters={filters} globalFilterFields={["id", "tags"]} header={header} emptyMessage="No names found.">
+                <Column field="id" header="Name" style={{ maxWidth: '50%' }} />
+                <Column field="chaldeanTotal" header="Chaldean Total" style={{ maxWidth: '10%' }} />
+                <Column field="pythagoreanTotal" header="Pythagorean Total" style={{ maxWidth: '10%' }} />
+                <Column field="chaldeanActual" header="Chaldean Actual" style={{ maxWidth: '10%' }} />
+                <Column field="pythagoreanActual" header="Pythagorean Actual" style={{ maxWidth: '10%' }} />
             </DataTable>
         </div>
     );

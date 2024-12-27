@@ -7,13 +7,17 @@ function App() {
   return (
     <div className="w-full">
       <Navbar />
-      <BrowserRouter>
-        <Routes>
-          <Route index path="/calculator" element={<Calculator />} />
-          <Route index path="/names" element={<NamesTable />} />
-          <Route path="*" element={<Navigate to="/calculator" />} />
-        </Routes>
-      </BrowserRouter>
+      <div className="w-full h-full flex pt-8 justify-content-center align-items-center overflow-auto">
+        <div className="container-width">
+          <BrowserRouter>
+            <Routes>
+              <Route index path="/calculator" element={<Calculator />} />
+              <Route index path="/names" element={<NamesTable />} />
+              <Route path="*" element={<Navigate to="/calculator" />} />
+            </Routes>
+          </BrowserRouter>
+        </div>
+      </div>
     </div>
   );
 }

@@ -177,7 +177,7 @@ const Calculator = () => {
     }, [name])
 
     return (
-        <div className='flex flex-column m-2 p-2 justify-content-center shadow-3 border-round-md' >
+        <div className='flex flex-column m-2 p-2 justify-content-center shadow-3 border-round-md surface-100' >
             <label className='white-space-nowrap'>Enter name: </label>
             <div className='flex align-items-center'>
                 <InputText 
@@ -196,7 +196,7 @@ const Calculator = () => {
                     size="large" 
                 />
             </div>
-            <div className='mt-2 flex w-full surface-0 p-2 border-round-md overflow-auto'>
+            <div className='mt-2 flex w-full p-2 border-round-md overflow-auto'>
                 <div className='mx-1 justify-content-start'>
                     <div className={`${cellStyle} md:w-7rem`}> </div>
                     <div className={`${cellStyle} font-semibold hidden md:flex md:w-7rem`}>Chaldean</div>
@@ -233,7 +233,7 @@ const Calculator = () => {
                     <div className={`${cellStyle} w-5rem flex border-round-xl bg-green-200`}>{`${pythagoreanValues.total} / ${pythagoreanValues.actual}`}</div>
                 </div>
             </div>
-            <div className='mt-2 flex w-full surface-0 p-2 border-round-md overflow-auto block md:hidden'>
+            <div className='mt-2 flex w-full p-2 border-round-md overflow-auto block md:hidden'>
                 {/* Display values of each letter of the name */}
                 {name.split('').map((letter, index) => (
                     <div key={index} className='block md:hidden'>
