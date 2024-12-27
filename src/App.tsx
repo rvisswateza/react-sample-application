@@ -1,28 +1,19 @@
-// import { useEffect, useState } from "react";
-// import type { Schema } from "../amplify/data/resource";
-// import { generateClient } from "aws-amplify/data";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Calculator from "./components/Calculator.tsx";
 import Navbar from "./components/Navbar.tsx";
-
-// const client = generateClient<Schema>();
+import NamesTable from "./components/NamesTable.tsx";
 
 function App() {
-  // const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  // useEffect(() => {
-  //   client.models.Todo.observeQuery().subscribe({
-  //     next: (data) => setTodos([...data.items]),
-  //   });
-  // }, []);
-
-  // function createTodo() {
-  //   client.models.Todo.create({ content: window.prompt("Todo content") });
-  // }
-
   return (
     <div className="w-full">
-      <Navbar/>
-      <Calculator/>
+      <Navbar />
+      <BrowserRouter>
+        <Routes>
+          <Route index path="/calculator" element={<Calculator />} />
+          <Route index path="/names" element={<NamesTable />} />
+          <Route path="*" element={<Navigate to="/calculator" />} />
+        </Routes>
+      </BrowserRouter>
     </div>
   );
 }

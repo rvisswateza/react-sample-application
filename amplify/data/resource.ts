@@ -4,13 +4,15 @@ const schema = a.schema({
   Names: a
     .model({
       id: a.id(),
-      name: a.string(),
-      category: a.string(),
-      subCategory: a.string(),
-      pythagoreanTotal: a.integer(),
-      chaldeanTotal: a.integer(),
-      pythagoreanValue: a.integer(),
-      chaldeanValue: a.integer(),
+      tags: a.string().array(),
+      pythagoreanVowels: a.integer().required(),
+      chaldeanVowels: a.integer().required(),
+      pythagoreanConsonants: a.integer().required(),
+      chaldeanConsonants: a.integer().required(),
+      pythagoreanTotal: a.integer().required(),
+      chaldeanTotal: a.integer().required(),
+      pythagoreanActual: a.integer().required(),
+      chaldeanActual: a.integer().required(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });

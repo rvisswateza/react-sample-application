@@ -2,7 +2,13 @@ import { InputText } from 'primereact/inputtext'
 import pythagoreanMapping from '../data/pythagoreanMapping.json';
 import chaldeanMapping from '../data/chaldeanMapping.json';
 import { Badge } from 'primereact/badge';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
+import type { Schema } from "../../amplify/data/resource.ts";
+import { generateClient } from "aws-amplify/data";
+import { MultiSelect } from 'primereact/multiselect';
+import { Button } from 'primereact/button';
+
+const client = generateClient<Schema>();
 
 interface CalculationResult {
     vowels: number;
@@ -11,9 +17,7 @@ interface CalculationResult {
     actual: number;
 }
 
-
 const Calculator = () => {
-
     const defaultResult: CalculationResult = {
         vowels: 0,
         consonants: 0,
@@ -26,6 +30,30 @@ const Calculator = () => {
     const [pythagoreanValues, setPythagoreanValues] = useState<CalculationResult>(defaultResult);
     const [chaldeanLetterValues, setChaldeanLetterValues] = useState<string[]>([]);
     const [pythagoreanLetterValues, setPythagoreanLetterValues] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
+    const nameRef = useRef<HTMLInputElement>(null);
+    const tagsRef = useRef<any>(null);
+
+    const tags = ["Male", "Female", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
+
+    const tagSelectFooterTemplate = () => {
+        const length = selectedTags ? selectedTags.length : 0;
+
+        return (
+            <div className="py-2 px-3">
+                <b>{length}</b> item{length > 1 ? 's' : ''} selected.
+            </div>
+        );
+    };
+
+    const tagSelectItemTemplate = (option: string) => {
+        return (
+            <div className="p-1">
+                {option}
+            </div>
+        )
+    }
 
     const cellStyle = "my-1 align-items-center justify-content-center h-2rem"
 
@@ -83,17 +111,17 @@ const Calculator = () => {
     const calculateLetterValues = (name: string) => {
         const chaldeanMap = loadMapping('Chaldean');
         const pythagoreanMap = loadMapping('Pythagorean');
-    
+
         const isAlphabet = (char: string) => /^[a-zA-Z]$/.test(char); // Regex to check if the character is an alphabet
-    
-        const chaldeanValues = name.toLowerCase().split('').map((char) => 
+
+        const chaldeanValues = name.toLowerCase().split('').map((char) =>
             isAlphabet(char) ? (chaldeanMap.get(char) || '').toString() : ''
         );
-    
-        const pythagoreanValues = name.toLowerCase().split('').map((char) => 
+
+        const pythagoreanValues = name.toLowerCase().split('').map((char) =>
             isAlphabet(char) ? (pythagoreanMap.get(char) || '').toString() : ''
         );
-    
+
         setChaldeanLetterValues(chaldeanValues);
         setPythagoreanLetterValues(pythagoreanValues);
     };
@@ -101,8 +129,45 @@ const Calculator = () => {
     const countAlphanumericCharacters = (str: string) => {
         const alphanumericCharacters = str.match(/[a-zA-Z0-9]/g);
         return alphanumericCharacters ? alphanumericCharacters.length : 0;
-    }    
-    
+    }
+
+    async function saveNewName(name: string, tags: string[], pythagoreanValues: CalculationResult, chaldeanValues: CalculationResult) {
+        if(!name || (name && name==='')){
+            nameRef?.current?.focus();
+            return;
+        }
+
+        if(!tags || (tags && tags.length===0)){
+            tagsRef?.current?.focus();
+            return;
+        }
+
+        const input = {
+            id: name,
+            tags: tags,
+            pythagoreanVowels: pythagoreanValues.vowels,
+            pythagoreanConsonants: pythagoreanValues.consonants,
+            pythagoreanTotal: pythagoreanValues.total,
+            pythagoreanActual: pythagoreanValues.actual,
+            chaldeanVowels: chaldeanValues.vowels,
+            chaldeanConsonants: chaldeanValues.consonants,
+            chaldeanTotal: chaldeanValues.total,
+            chaldeanActual: chaldeanValues.actual,
+        }
+
+        const existingRecord = await client.models.Names.get({id: name});
+
+        if(existingRecord.data){
+            await client.models.Names.update(input);
+        }
+        else{
+            await client.models.Names.create(input);
+        }
+
+        setName('');
+        setSelectedTags([]);
+    }
+
 
     useEffect(() => {
         setChaldeanValues(calculateNumerology('Chaldean', name.toLowerCase()))
@@ -115,8 +180,21 @@ const Calculator = () => {
         <div className='flex flex-column m-2 p-2 justify-content-center shadow-3 border-round-md' >
             <label className='white-space-nowrap'>Enter name: </label>
             <div className='flex align-items-center'>
-                <InputText className='w-full mt-2' style={{ letterSpacing: "2px" }} value={name} onChange={(e) => { setName(e.target.value.toUpperCase()) }} />
-                <Badge className='mt-2 ml-2' value={nameLength} size="large" />
+                <InputText 
+                    className='w-full mt-2' 
+                    style={{ letterSpacing: "2px" }} 
+                    value={name} 
+                    onChange={(e) => { 
+                        setSaveDisabled(false);
+                        setName(e.target.value.toUpperCase());
+                    }}
+                    ref={nameRef}
+                />
+                <Badge
+                    className='mt-2 ml-2' 
+                    value={nameLength} 
+                    size="large" 
+                />
             </div>
             <div className='mt-2 flex w-full surface-0 p-2 border-round-md overflow-auto'>
                 <div className='mx-1 justify-content-start'>
@@ -131,9 +209,9 @@ const Calculator = () => {
                 {name.split('').map((letter, index) => (
                     <div key={index} className='hidden md:block'>
                         <div className={`${cellStyle} w-2rem flex`}></div>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100" }`}>{chaldeanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
                         <div className={`${cellStyle} w-2rem flex text-green-900 font-bold`}>{letter}</div>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100" }`}>{pythagoreanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
                     </div>
                 ))}
                 <div className='mx-1'>
@@ -159,11 +237,38 @@ const Calculator = () => {
                 {/* Display values of each letter of the name */}
                 {name.split('').map((letter, index) => (
                     <div key={index} className='block md:hidden'>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100" }`}>{chaldeanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
                         <div className={`${cellStyle} w-2rem flex text-green-900 font-bold`}>{letter}</div>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100" }`}>{pythagoreanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
                     </div>
                 ))}
+            </div>
+            <div className='mt-2 flex w-full p-2'>
+                <MultiSelect
+                    value={selectedTags}
+                    options={tags}
+                    onChange={(e) => {
+                        setSaveDisabled(false);
+                        setSelectedTags(e.value);
+                    }}
+                    placeholder="Select Tags"
+                    showClear={true}
+                    itemTemplate={tagSelectItemTemplate}
+                    panelFooterTemplate={tagSelectFooterTemplate}
+                    className="w-full md:w-20rem"
+                    display="chip"
+                    ref={tagsRef}
+                />
+                <Button
+                    className='ml-2'
+                    label='Save'
+                    icon="pi pi-save"
+                    disabled={saveDisabled}
+                    onClick={() => {
+                        setSaveDisabled(true);
+                        saveNewName(name, tags, pythagoreanValues, chaldeanValues)
+                    }}
+                />
             </div>
         </div>
     )
