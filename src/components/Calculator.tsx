@@ -5,7 +5,6 @@ import { Badge } from 'primereact/badge';
 import { useEffect, useRef, useState } from "react";
 import type { Schema } from "../../amplify/data/resource.ts";
 import { generateClient } from "aws-amplify/data";
-import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
 
@@ -37,24 +36,6 @@ const Calculator = () => {
     const tagsRef = useRef<any>(null);
 
     const tags = ["Male", "Female", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
-
-    const tagSelectFooterTemplate = () => {
-        const length = selectedTags ? selectedTags.length : 0;
-
-        return (
-            <div className="py-2 px-3">
-                <b>{length}</b> item{length > 1 ? 's' : ''} selected.
-            </div>
-        );
-    };
-
-    const tagSelectItemTemplate = (option: string) => {
-        return (
-            <div className="p-1">
-                {option}
-            </div>
-        )
-    }
 
     const onTagChange = (e: CheckboxChangeEvent) => {
         let updatedTags = [...selectedTags];
