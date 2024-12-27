@@ -7,6 +7,7 @@ import outputs from "../amplify_outputs.json";
 import { PrimeReactProvider } from 'primereact/api';
 import "primereact/resources/themes/saga-green/theme.css";
 import "primeflex/primeflex.css";
+import 'primeicons/primeicons.css';
 
 Amplify.configure(outputs);
 

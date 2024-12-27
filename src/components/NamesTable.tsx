@@ -3,6 +3,8 @@ import type { Schema } from "../../amplify/data/resource.ts";
 import { generateClient } from "aws-amplify/data";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
+import { IconField } from "primereact/iconfield";
+import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { FilterMatchMode } from "primereact/api";
 import { Button } from "primereact/button";
@@ -50,10 +52,10 @@ const NamesTable = () => {
         return (
             <div className="flex justify-content-between">
                 <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined onClick={clearFilters} />
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
+                <IconField iconPosition="left">
+                    <InputIcon className="pi pi-search"></InputIcon>
                     <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
-                </span>
+                </IconField>
             </div>
         );
     };
@@ -78,7 +80,7 @@ const NamesTable = () => {
     const header = renderHeader();
 
     return (
-        <div className="card">
+        <div className="">
             <DataTable value={names} paginator rows={10} filters={filters} globalFilterFields={["id", "tags"]} header={header} emptyMessage="No names found.">
                 <Column field="id" header="Name" filter filterPlaceholder="Search by ID" style={{ minWidth: '12rem' }} />
                 <Column field="tags" header="Tags" filter filterPlaceholder="Search by Tags" style={{ minWidth: '12rem' }} />
