@@ -35,7 +35,7 @@ const Calculator = () => {
     const nameRef = useRef<HTMLInputElement>(null);
     const tagsRef = useRef<any>(null);
 
-    const tags = ["Male", "Female", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
+    const tags = ["Male", "Female", "General", "Office", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
 
     const onTagChange = (e: CheckboxChangeEvent) => {
         let updatedTags = [...selectedTags];
@@ -189,7 +189,7 @@ const Calculator = () => {
                     size="large"
                 />
             </div>
-            <div className='mt-2 flex w-full p-2 border-round-md overflow-auto'>
+            <div className='mt-2 flex w-full p-2 border-round-md'>
                 <div className='mx-1 justify-content-start'>
                     <div className={`${cellStyle} md:w-7rem`}> </div>
                     <div className={`${cellStyle} font-semibold hidden md:flex md:w-7rem`}>Chaldean</div>
@@ -199,14 +199,16 @@ const Calculator = () => {
                     <div className={`${cellStyle} font-semibold flex w-1rem md:hidden`}>P</div>
                 </div>
                 {/* Display values of each letter of the name */}
+                <div className='flex overflow-auto'>
                 {name.split('').map((letter, index) => (
                     <div key={index} className='hidden md:block'>
-                        <div className={`${cellStyle} w-2rem flex`}></div>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
-                        <div className={`${cellStyle} w-2rem flex text-green-900 font-bold`}>{letter}</div>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-1rem flex`}></div>
+                        <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-1rem flex text-green-900 font-bold ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{letter}</div>
+                        <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
                     </div>
                 ))}
+                </div>
                 <div className='mx-1'>
                     <div className={`${cellStyle} w-5rem flex`}>Vowels</div>
                     <div className={`${cellStyle} w-5rem flex border-round-xl bg-red-200`}>{chaldeanValues.vowels}</div>
@@ -230,17 +232,17 @@ const Calculator = () => {
                 {/* Display values of each letter of the name */}
                 {name.split('').map((letter, index) => (
                     <div key={index} className='block md:hidden'>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
-                        <div className={`${cellStyle} w-2rem flex text-green-900 font-bold`}>{letter}</div>
-                        <div className={`${cellStyle} w-2rem flex border-0 border-round-2xl ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
+                        <div className={`${cellStyle} w-1rem flex text-green-900 font-bold ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{letter}</div>
+                        <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
                     </div>
                 ))}
             </div>
             <div className='mt-2 flex w-full p-2 justify-content-between align-items-center'>
-                <div className="flex flex-wrap mt-2">
-                    <label className='pr-2'>Tags:</label>
+                <div className="grid">
+                    <label className='mr-3 col-12'>Tags:</label>
                     {tags.map(tag => (
-                        <div key={tag} className="flex align-items-center mr-3">
+                        <div key={tag} className="flex col-2 align-items-center mr-3">
                             <Checkbox
                                 inputId={tag}
                                 value={tag}
@@ -252,7 +254,7 @@ const Calculator = () => {
                     ))}
                 </div>
                 <Button
-                    className='ml-2'
+                    className='ml-2 flex-shrink-0'
                     label='Save'
                     icon="pi pi-save"
                     disabled={saveDisabled}

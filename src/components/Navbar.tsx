@@ -14,7 +14,7 @@ const Navbar = () => {
                         text
                         onClick={() => setIsMenuOpen((prev) => !prev)}
                     />
-                    <div className='text-3xl p-2 text-white white-space-nowrap'>Numerology Calculator</div>
+                    <div className='text-xl p-1 text-white white-space-nowrap'>Numerology Calculator</div>
                 </div>
                 <div className={`align-items-center h-full hidden md:flex md:flex-row md:w-min ${isMenuOpen ? "flex w-full flex-column py-4" : ""}`}>
                     <a

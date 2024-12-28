@@ -69,6 +69,8 @@ const NamesTable = () => {
                 className="mx-1"
                 icon="pi pi-eye"
                 severity="info"
+                style={{height:"1.5rem", width:"1.5rem"}}
+                size="small"
                 outlined
                 onClick={() => setViewName(name)}
             />
@@ -76,6 +78,8 @@ const NamesTable = () => {
                 className="mx-1"
                 icon="pi pi-trash"
                 severity="danger"
+                style={{height:"1.5rem", width:"1.5rem"}}
+                size="small"
                 outlined
                 onClick={() => deleteName(name.id)}
             />
@@ -147,13 +151,13 @@ const NamesTable = () => {
                         <div>
                             <strong>Chaldean Vowels:</strong> {viewName.chaldeanVowels}
                         </div>
-                        <div>
+                        <div className="text-primary">
                             <strong>Pythagorean Vowels:</strong> {viewName.pythagoreanVowels}
                         </div>
                         <div>
                             <strong>Chaldean Consonants:</strong> {viewName.chaldeanConsonants}
                         </div>
-                        <div>
+                        <div className="text-primary">
                             <strong>Pythagorean Consonants:</strong> {viewName.pythagoreanConsonants}
                         </div>
                     </div>
@@ -161,12 +165,12 @@ const NamesTable = () => {
             </Dialog>
 
             <DataTable value={names} paginator rows={100} stripedRows showGridlines rowsPerPageOptions={[10, 25, 50, 100]} filters={filters} globalFilterFields={["id", "tags"]} header={tableHeader} emptyMessage="No names found.">
-                <Column field="id" header="Name" style={{ width: '50%' }} />
-                <Column field="chaldeanTotal" header="Chaldean Total" style={{ width: '10%' }} />
-                <Column field="pythagoreanTotal" header="Pythagorean Total" style={{ width: '10%' }} />
-                <Column field="chaldeanActual" header="Chaldean Actual" style={{ width: '10%' }} />
-                <Column field="pythagoreanActual" header="Pythagorean Actual" style={{ width: '10%' }} />
-                <Column field="id" header="Actions" style={{ width: '10%' }} body={actionColumnBody} />
+                <Column field="id" header="Name" style={{ width: '50%', padding: '0.2rem 0.5rem' }} />
+                <Column field="chaldeanTotal" header="Chaldean Total" style={{ width: '10%', padding: '0.2rem 0.5rem' }} />
+                <Column field="pythagoreanTotal" header="Pythagorean Total" style={{ width: '10%', padding: '0.2rem 0.5rem' }} />
+                <Column field="chaldeanActual" header="Chaldean Actual" style={{ width: '10%', padding: '0.2rem 0.5rem' }} />
+                <Column field="pythagoreanActual" header="Pythagorean Actual" style={{ width: '10%', padding: '0.2rem 0.5rem' }} />
+                <Column field="id" header="Actions" style={{ width: '10%', padding: '0.2rem 0.5rem' }} body={actionColumnBody} />
             </DataTable>
         </div>
     );

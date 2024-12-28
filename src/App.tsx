@@ -7,7 +7,7 @@ function App() {
   return (
     <div className="w-full">
       <Navbar />
-      <div className="w-full h-full flex pt-8 justify-content-center align-items-center overflow-auto">
+      <div className="w-full h-full flex pt-6 justify-content-center align-items-center overflow-auto">
         <div className="container-width">
           <BrowserRouter>
             <Routes>
