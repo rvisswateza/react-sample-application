@@ -200,14 +200,14 @@ const Calculator = () => {
                 </div>
                 {/* Display values of each letter of the name */}
                 <div className='flex overflow-auto'>
-                {name.split('').map((letter, index) => (
-                    <div key={index} className='hidden md:block'>
-                        <div className={`${cellStyle} w-1rem flex`}></div>
-                        <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
-                        <div className={`${cellStyle} w-1rem flex text-green-900 font-bold ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{letter}</div>
-                        <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
-                    </div>
-                ))}
+                    {name.split('').map((letter, index) => (
+                        <div key={index} className='hidden md:block'>
+                            <div className={`${cellStyle} w-1rem flex`}></div>
+                            <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
+                            <div className={`${cellStyle} w-1rem flex text-green-900 font-bold ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{letter}</div>
+                            <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{pythagoreanLetterValues[index]}</div>
+                        </div>
+                    ))}
                 </div>
                 <div className='mx-1'>
                     <div className={`${cellStyle} w-5rem flex`}>Vowels</div>
@@ -238,11 +238,11 @@ const Calculator = () => {
                     </div>
                 ))}
             </div>
-            <div className='mt-2 flex w-full p-2 justify-content-between align-items-center'>
-                <div className="grid">
-                    <label className='mr-3 col-12'>Tags:</label>
+            <div className='mt-2 flex flex-column w-full p-2 justify-content-between align-items-center'>
+                <div className="col-12 grid gap-1">
+                    <label className='col'>Tags:</label>
                     {tags.map(tag => (
-                        <div key={tag} className="flex col-2 align-items-center mr-3">
+                        <div key={tag} className="flex col align-items-center">
                             <Checkbox
                                 inputId={tag}
                                 value={tag}
