@@ -10,6 +10,8 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { InputNumber } from "primereact/inputnumber";
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import { Panel } from "primereact/panel";
+import { InputText } from "primereact/inputtext";
+import { SelectButton } from "primereact/selectbutton";
 
 const client = generateClient<Schema>();
 
@@ -54,10 +56,10 @@ const NamesTable = () => {
         else
             updatedTags.splice(updatedTags.indexOf(e.value), 1);
 
-            setFilters((prevFilters: any) => ({
-                ...prevFilters,
-                tags: { ...prevFilters.tags, value: updatedTags }
-            }))
+        setFilters((prevFilters: any) => ({
+            ...prevFilters,
+            tags: { ...prevFilters.tags, value: updatedTags }
+        }))
     };
 
     // const actionColumnBody = (name: Name) => {
@@ -169,28 +171,30 @@ const NamesTable = () => {
         <div className="">
             <Panel headerTemplate={filtersHeaderTemplate} toggleable expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
                 <div className="grid">
-                    <div className="col-12 md:col-6 flex align-items-center">
-                        <label className="mr-2">Chaldean Actual:</label>
-                        <InputNumber
+                    <div className="col-12 flex flex-column md:flex-row md:align-items-center">
+                        <label className="mr-2 mb-2 md:mb-0">Chaldean Actual:</label>
+                        <SelectButton
                             value={filters.chaldeanActual.value}
                             onChange={(e) =>
                                 setFilters((prevFilters: any) => ({
                                     ...prevFilters,
-                                    chaldeanActual: { ...prevFilters.chaldeanActual, value: e.value }
+                                    chaldeanActual: { ...prevFilters.chaldeanActual, value: (e.value === 'X' ? null : e.value) }
                                 }))
                             }
+                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 'X']}
                         />
                     </div>
-                    <div className="col-12 md:col-6 flex align-items-center">
-                        <label className="mr-2">Pythagorean Actual:</label>
-                        <InputNumber
+                    <div className="col-12 flex flex-column md:flex-row md:align-items-center">
+                        <label className="mr-2 mb-2 md:mb-0">Pythagorean Actual:</label>
+                        <SelectButton
                             value={filters.pythagoreanActual.value}
                             onChange={(e) =>
                                 setFilters((prevFilters: any) => ({
                                     ...prevFilters,
-                                    chaldeanActual: { ...prevFilters.chaldeanActual, value: e.value }
+                                    pythagoreanActual: { ...prevFilters.pythagoreanActual, value: (e.value === 'X' ? null : e.value) }
                                 }))
                             }
+                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 'X']}
                         />
                     </div>
                     <div className="col-12 grid gap-1">
