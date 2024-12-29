@@ -7,10 +7,10 @@ import { FilterMatchMode, FilterService } from "primereact/api";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { ConfirmDialog } from "primereact/confirmdialog";
-import { InputNumber } from "primereact/inputnumber";
+// import { InputNumber } from "primereact/inputnumber";
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import { Panel } from "primereact/panel";
-import { InputText } from "primereact/inputtext";
+// import { InputText } from "primereact/inputtext";
 import { SelectButton } from "primereact/selectbutton";
 
 const client = generateClient<Schema>();
