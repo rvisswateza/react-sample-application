@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Schema } from "../../amplify/data/resource.ts";
 import { generateClient } from "aws-amplify/data";
 import { DataTable } from "primereact/datatable";
@@ -6,16 +6,21 @@ import { Column } from "primereact/column";
 import { FilterMatchMode, FilterService } from "primereact/api";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { ConfirmDialog } from "primereact/confirmdialog";
+import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 // import { InputNumber } from "primereact/inputnumber";
 import { Checkbox, CheckboxChangeEvent } from "primereact/checkbox";
 import { Panel } from "primereact/panel";
 // import { InputText } from "primereact/inputtext";
 import { SelectButton } from "primereact/selectbutton";
+import { Dropdown } from "primereact/dropdown";
+import { InputText } from "primereact/inputtext";
+import { MenuItem } from "primereact/menuitem";
+import { Menu } from "primereact/menu";
 
 const client = generateClient<Schema>();
 
 type Name = Schema["Names"]["type"];
+type DropdownOption = { name: String, code: String }
 
 FilterService.register('custom_tags', (value, filters) => {
     if (!filters || filters.length <= 1) {
@@ -37,6 +42,12 @@ const NamesTable = () => {
         pythagoreanActual: { value: null, matchMode: FilterMatchMode.EQUALS },
     });
     const tags = ["Male", "Female", "General", "Office", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
+    const nameFilterDropdownOptions: DropdownOption[] = [
+        { name: 'Starts with', code: FilterMatchMode.STARTS_WITH },
+        { name: 'Ends with', code: FilterMatchMode.ENDS_WITH },
+        { name: 'Contains', code: FilterMatchMode.CONTAINS },
+        { name: 'Not contains', code: FilterMatchMode.NOT_CONTAINS },
+    ];
 
     const getNamesList = async () => {
         const response = await client.models.Names.list();
@@ -85,27 +96,6 @@ const NamesTable = () => {
     //     </div>
     // }
 
-    // const acceptDeletion = (name: string) => {
-    //     client.models.Names.delete({ id: name })
-    //     setNames(names.filter((item) => item.id !== name))
-    //     return;
-    // };
-
-    // const rejectDeletion = () => {
-    //     return;
-    // };
-
-    // const deleteName = (name: string) => {
-    //     confirmDialog({
-    //         message: `Are you sure you want to delete ${name}?`,
-    //         header: 'Confirmation',
-    //         icon: 'pi pi-exclamation-triangle',
-    //         defaultFocus: 'accept',
-    //         accept: () => acceptDeletion(name),
-    //         reject: rejectDeletion
-    //     });
-    // };
-
     const filtersHeaderTemplate = (options: any) => {
         const className = `${options.className} justify-content-space-between align-items-center`;
 
@@ -137,11 +127,64 @@ const NamesTable = () => {
     }
 
     const nameValueBodyTemplate = (name: Name) => {
-        return <div className="flex">
-            <div className="flex justify-content-center align-items-center mr-1">{name.id}</div>
-            <div className="flex justify-content-center align-items-center border-round-xl px-2 border-1">{countAlphanumericCharacters(name.id)}</div>
-        </div>
-    }
+        const menuRef = useRef<Menu>(null);
+
+        const acceptDeletion = (name: string) => {
+            client.models.Names.delete({ id: name })
+            setNames(names.filter((item) => item.id !== name))
+            return;
+        };
+    
+        const rejectDeletion = () => {
+            return;
+        };
+    
+        const deleteName = (name: string) => {
+            confirmDialog({
+                message: `Are you sure you want to delete ${name}?`,
+                header: 'Confirmation',
+                icon: 'pi pi-exclamation-triangle',
+                defaultFocus: 'accept',
+                accept: () => acceptDeletion(name),
+                reject: rejectDeletion
+            });
+        };
+
+        const actionItems: MenuItem[] = [
+            {
+                label: 'Actions',
+                items: [
+                    {
+                        label: 'View',
+                        icon: 'pi pi-eye',
+                        command: () => setViewName(name),
+                    },
+                    {
+                        label: 'Delete',
+                        icon: 'pi pi-trash',
+                        command: () => deleteName(name.id),
+                    }
+                ]
+            }
+        ];
+
+        return (
+            <div className="flex">
+                <Menu model={actionItems} popup ref={menuRef} id={`${name}-action-menu`} />
+                <div
+                    className="flex justify-content-center align-items-center mr-1 hover:underline cursor-pointer"
+                    onClick={(e) => menuRef.current?.toggle(e)}
+                    aria-controls={`${name}-action-menu`}
+                    aria-haspopup
+                >
+                    {name.id}
+                </div>
+                <div className="flex justify-content-center align-items-center border-round-xl px-2 border-1">
+                    {countAlphanumericCharacters(name.id)}
+                </div>
+            </div>
+        );
+    };
 
     const columnValuesHeaderTemplate = (format: string) => {
         return <div className="flex flex-column w-full">
@@ -178,10 +221,10 @@ const NamesTable = () => {
                             onChange={(e) =>
                                 setFilters((prevFilters: any) => ({
                                     ...prevFilters,
-                                    chaldeanActual: { ...prevFilters.chaldeanActual, value: (e.value === 'X' ? null : e.value) }
+                                    chaldeanActual: { ...prevFilters.chaldeanActual, value: e.value }
                                 }))
                             }
-                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 'X']}
+                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
                         />
                     </div>
                     <div className="col-12 flex flex-column md:flex-row md:align-items-center">
@@ -191,10 +234,37 @@ const NamesTable = () => {
                             onChange={(e) =>
                                 setFilters((prevFilters: any) => ({
                                     ...prevFilters,
-                                    pythagoreanActual: { ...prevFilters.pythagoreanActual, value: (e.value === 'X' ? null : e.value) }
+                                    pythagoreanActual: { ...prevFilters.pythagoreanActual, value: e.value }
                                 }))
                             }
-                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9, 'X']}
+                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+                        />
+                    </div>
+                    <div className="col-12 flex flex-column md:flex-row md:align-items-center">
+                        <label className="mr-2 mb-2 md:mb-0">Name:</label>
+                        <Dropdown
+                            value={nameFilterDropdownOptions.find((item) => item.code === filters.id.matchMode)}
+                            options={nameFilterDropdownOptions}
+                            onChange={(e) =>
+                                setFilters((prevFilters: any) => ({
+                                    ...prevFilters,
+                                    id: { ...prevFilters.id, matchMode: e.value.code }
+                                }))
+                            }
+                            optionLabel="name"
+                            placeholder="Select a filter mode"
+                            className="mr-2 mb-2 md:mb-0 w-full md:w-10rem"
+                        />
+                        <InputText
+                            value={filters.id.value}
+                            onChange={(e) =>
+                                setFilters((prevFilters: any) => ({
+                                    ...prevFilters,
+                                    id: { ...prevFilters.id, value: (e.target.value === '' ? null : e.target.value.toUpperCase()) }
+                                }))
+                            }
+                            placeholder="Search by name"
+                            className="w-full"
                         />
                     </div>
                     <div className="col-12 grid gap-1">
@@ -253,7 +323,7 @@ const NamesTable = () => {
             </Dialog>
 
             <DataTable value={names} paginator rows={100} rowsPerPageOptions={[10, 25, 50, 100]} stripedRows showGridlines removableSort filters={filters} emptyMessage="No names found.">
-                <Column field="id" header="Name" sortable body={nameValueBodyTemplate} filter filterPlaceholder="Search by name" style={{ width: '50%', padding: '0.2rem 0.5rem' }} />
+                <Column field="id" header="Name" sortable body={nameValueBodyTemplate} style={{ width: '50%', padding: '0.2rem 0.5rem' }} />
                 <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} sortable body={chaldeanValuesBodyTemplate} style={{ width: '25%', padding: '0.2rem 0.5rem' }} />
                 <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} sortable body={pythagoreanValuesBodyTemplate} style={{ width: '25%', padding: '0.2rem 0.5rem' }} />
                 {/* <Column field="chaldeanTotal" header="Chaldean Total" sortable style={{ width: '10%', padding: '0.2rem 0.5rem' }} />

@@ -1,4 +1,4 @@
-import { InputText } from 'primereact/inputtext'
+import { InputText } from 'primereact/inputtext';
 import pythagoreanMapping from '../data/pythagoreanMapping.json';
 import chaldeanMapping from '../data/chaldeanMapping.json';
 import { Badge } from 'primereact/badge';
@@ -7,15 +7,21 @@ import type { Schema } from "../../amplify/data/resource.ts";
 import { generateClient } from "aws-amplify/data";
 import { Button } from 'primereact/button';
 import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
+import { Message } from 'primereact/message';
 
 const client = generateClient<Schema>();
 
-interface CalculationResult {
+type CalculationResult = {
     vowels: number;
     consonants: number;
     total: number;
     actual: number;
-}
+};
+
+type DisplayMessage = {
+    severity: "success" | "info" | "warn" | "error" | "secondary" | "contrast" | undefined;
+    message: string;
+};
 
 const Calculator = () => {
     const defaultResult: CalculationResult = {
@@ -23,7 +29,7 @@ const Calculator = () => {
         consonants: 0,
         total: 0,
         actual: 0
-    }
+    };
     const [name, setName] = useState<string>("");
     const [nameLength, setNameLength] = useState<number>(0);
     const [chaldeanValues, setChaldeanValues] = useState<CalculationResult>(defaultResult);
@@ -32,6 +38,7 @@ const Calculator = () => {
     const [pythagoreanLetterValues, setPythagoreanLetterValues] = useState<string[]>([]);
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
+    const [displayMessage, setDisplayMessage] = useState<DisplayMessage | null>(null);
     const nameRef = useRef<HTMLInputElement>(null);
     const tagsRef = useRef<any>(null);
 
@@ -40,15 +47,13 @@ const Calculator = () => {
     const onTagChange = (e: CheckboxChangeEvent) => {
         let updatedTags = [...selectedTags];
 
-        if (e.checked)
-            updatedTags.push(e.value);
-        else
-            updatedTags.splice(updatedTags.indexOf(e.value), 1);
+        if (e.checked) updatedTags.push(e.value);
+        else updatedTags.splice(updatedTags.indexOf(e.value), 1);
 
         setSelectedTags(updatedTags);
     };
 
-    const cellStyle = "my-1 align-items-center justify-content-center h-2rem"
+    const cellStyle = "my-1 align-items-center justify-content-center h-2rem";
 
     const loadMapping = (mode: string): Map<string, number> => {
         const data = mode === 'Chaldean' ? chaldeanMapping : pythagoreanMapping;
@@ -105,7 +110,7 @@ const Calculator = () => {
         const chaldeanMap = loadMapping('Chaldean');
         const pythagoreanMap = loadMapping('Pythagorean');
 
-        const isAlphabet = (char: string) => /^[a-zA-Z]$/.test(char); // Regex to check if the character is an alphabet
+        const isAlphabet = (char: string) => /^[a-zA-Z]$/.test(char);
 
         const chaldeanValues = name.toLowerCase().split('').map((char) =>
             isAlphabet(char) ? (chaldeanMap.get(char) || '').toString() : ''
@@ -122,16 +127,26 @@ const Calculator = () => {
     const countAlphanumericCharacters = (str: string) => {
         const alphanumericCharacters = str.match(/[a-zA-Z0-9]/g);
         return alphanumericCharacters ? alphanumericCharacters.length : 0;
-    }
+    };
+
+    const showMessage = (severity: DisplayMessage["severity"], message: string) => {
+        setDisplayMessage({ severity, message });
+        setTimeout(() => setDisplayMessage(null), 5000);
+    };
 
     async function saveNewName(name: string, tags: string[], pythagoreanValues: CalculationResult, chaldeanValues: CalculationResult) {
+        setSaveDisabled(true);
         if (!name || (name && name === '')) {
             nameRef?.current?.focus();
+            showMessage("error", "Name cannot be empty. Please enter a valid name.");
+            setSaveDisabled(false);
             return;
         }
 
         if (!tags || (tags && tags.length === 0)) {
             tagsRef?.current?.focus();
+            showMessage("error", "Please select at least one tag.");
+            setSaveDisabled(false);
             return;
         }
 
@@ -146,31 +161,32 @@ const Calculator = () => {
             chaldeanConsonants: chaldeanValues.consonants,
             chaldeanTotal: chaldeanValues.total,
             chaldeanActual: chaldeanValues.actual,
-        }
+        };
 
         const existingRecord = await client.models.Names.get({ id: name });
 
         if (existingRecord.data) {
             await client.models.Names.update(input);
-        }
-        else {
+            showMessage("info", "The name has been successfully updated.");
+        } else {
             await client.models.Names.create(input);
+            showMessage("success", "The name has been successfully added.");
         }
 
         setName('');
         setSelectedTags([]);
+        setSaveDisabled(false);
     }
 
-
     useEffect(() => {
-        setChaldeanValues(calculateNumerology('Chaldean', name.toLowerCase()))
-        setPythagoreanValues(calculateNumerology('Pythagorean', name.toLowerCase()))
-        calculateLetterValues(name)
-        setNameLength(countAlphanumericCharacters(name))
-    }, [name])
+        setChaldeanValues(calculateNumerology('Chaldean', name.toLowerCase()));
+        setPythagoreanValues(calculateNumerology('Pythagorean', name.toLowerCase()));
+        calculateLetterValues(name);
+        setNameLength(countAlphanumericCharacters(name));
+    }, [name]);
 
     return (
-        <div className='flex flex-column m-2 p-2 justify-content-center shadow-3 border-round-md surface-100' >
+        <div className='flex flex-column m-2 p-2 justify-content-center shadow-3 border-round-md surface-100'>
             <label className='white-space-nowrap'>Enter name: </label>
             <div className='flex align-items-center'>
                 <InputText
@@ -178,7 +194,6 @@ const Calculator = () => {
                     style={{ letterSpacing: "2px" }}
                     value={name}
                     onChange={(e) => {
-                        setSaveDisabled(false);
                         setName(e.target.value.toUpperCase());
                     }}
                     ref={nameRef}
@@ -198,7 +213,6 @@ const Calculator = () => {
                     <div className={`${cellStyle} font-semibold hidden md:flex md:w-7rem`}>Pythagorean</div>
                     <div className={`${cellStyle} font-semibold flex w-1rem md:hidden`}>P</div>
                 </div>
-                {/* Display values of each letter of the name */}
                 <div className='flex overflow-auto'>
                     {name.split('').map((letter, index) => (
                         <div key={index} className='hidden md:block'>
@@ -229,7 +243,6 @@ const Calculator = () => {
                 </div>
             </div>
             <div className='mt-2 flex w-full p-2 border-round-md overflow-auto block md:hidden'>
-                {/* Display values of each letter of the name */}
                 {name.split('').map((letter, index) => (
                     <div key={index} className='block md:hidden'>
                         <div className={`${cellStyle} w-1rem flex border-0 ${isVowel(letter.toLowerCase()) ? "bg-red-100" : "bg-blue-100"}`}>{chaldeanLetterValues[index]}</div>
@@ -239,7 +252,7 @@ const Calculator = () => {
                 ))}
             </div>
             <div className='mt-2 flex flex-column w-full p-2 justify-content-between align-items-center'>
-                <div className="col-12 grid gap-1">
+                <div className="grid gap-1">
                     <label className='col'>Tags:</label>
                     {tags.map(tag => (
                         <div key={tag} className="flex col align-items-center">
@@ -253,19 +266,23 @@ const Calculator = () => {
                         </div>
                     ))}
                 </div>
-                <Button
-                    className='ml-2 flex-shrink-0'
-                    label='Save'
-                    icon="pi pi-save"
-                    disabled={saveDisabled}
-                    onClick={() => {
-                        setSaveDisabled(true);
-                        saveNewName(name, selectedTags, pythagoreanValues, chaldeanValues)
-                    }}
-                />
+                <div className='flex justify-content-between align-items-center w-full mt-1'>
+                    <div className=''>
+                        {displayMessage && <Message severity={displayMessage.severity} text={displayMessage.message} />}
+                    </div>
+                    <Button
+                        className='ml-2 flex-shrink-0'
+                        label='Save'
+                        icon="pi pi-save"
+                        disabled={saveDisabled}
+                        onClick={() => {
+                            saveNewName(name, selectedTags, pythagoreanValues, chaldeanValues);
+                        }}
+                    />
+                </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Calculator
+export default Calculator;
