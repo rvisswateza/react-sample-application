@@ -187,7 +187,7 @@ const NamesTable = () => {
 
     return (
         <div className="">
-            <Panel headerTemplate={filtersHeaderTemplate} toggleable expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
+            <Panel className="mb-1" headerTemplate={filtersHeaderTemplate} toggleable expandIcon="pi pi-chevron-down" collapseIcon="pi pi-chevron-up">
                 <div className="grid">
                     <div className="col-12 flex flex-column md:flex-row md:align-items-center">
                         <label className="mr-2 mb-2 md:mb-0">Chaldean Actual:</label>
@@ -301,8 +301,8 @@ const NamesTable = () => {
 
             <DataTable value={names} paginator rows={100} rowsPerPageOptions={[10, 25, 50, 100]} stripedRows showGridlines removableSort filters={filters} emptyMessage="No names found.">
                 <Column field="id" header="Name" sortable body={nameValueBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
-                <Column field="chaldeanActual" sortable header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
-                <Column field="pythagoreanActual" sortable header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
+                <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
+                <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
             </DataTable>
         </div>
     );
