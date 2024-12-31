@@ -154,7 +154,7 @@ const NamesTable = () => {
                 >
                     {name.id}
                 </div>
-                <div className="flex justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-3rem ">
+                <div className="flex justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-2rem ">
                     {countAlphanumericCharacters(name.id)}
                 </div>
             </div>
@@ -300,9 +300,9 @@ const NamesTable = () => {
             </Dialog>
 
             <DataTable value={names} paginator rows={100} rowsPerPageOptions={[10, 25, 50, 100]} stripedRows showGridlines removableSort filters={filters} emptyMessage="No names found.">
-                <Column field="id" header="Name" sortable body={nameValueBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
-                <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
-                <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{padding: '0.2rem 0.5rem' }} />
+                <Column field="id" header="Name" sortable body={nameValueBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
+                <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
+                <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
             </DataTable>
         </div>
     );
