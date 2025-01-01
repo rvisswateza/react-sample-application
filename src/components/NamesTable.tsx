@@ -14,7 +14,6 @@ import { InputText } from "primereact/inputtext";
 import { MenuItem } from "primereact/menuitem";
 import { Menu } from "primereact/menu";
 import NumberPicker from "./NumberPicker.tsx";
-import "./../App.css";
 
 const client = generateClient<Schema>();
 
@@ -110,11 +109,11 @@ const NamesTable = () => {
             setNames(names.filter((item) => item.id !== name))
             return;
         };
-
+    
         const rejectDeletion = () => {
             return;
         };
-
+    
         const deleteName = (name: string) => {
             confirmDialog({
                 message: `Are you sure you want to delete ${name}?`,
@@ -155,68 +154,36 @@ const NamesTable = () => {
                 >
                     {name.id}
                 </div>
-                <div className="flex justify-content-center align-items-center flex-shrink-0">
-                    <div className="flex justify-content-center align-items-center flex-shrink-0 bg-blue-200 mx-1 border-0 border-round w-4rem">
-                        {`${name.chaldeanTotal} - ${name.pythagoreanTotal}`}
-                    </div>
-                    <div className="flex justify-content-center align-items-center flex-shrink-0 bg-blue-300 mx-1 border-0 border-round w-3rem">
-                        {`${name.chaldeanActual} - ${name.pythagoreanActual}`}
-                    </div>
-                    <div className="flex justify-content-center align-items-center flex-shrink-0 bg-red-100 mx-1 border-0 border-round w-2rem">
-                        {countAlphanumericCharacters(name.id)}
-                    </div>
+                <div className="flex justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-2rem ">
+                    {countAlphanumericCharacters(name.id)}
                 </div>
             </div>
         );
     };
 
-    const nameValuesHeaderTemplate = () => {
-        return (
-            <div className="flex justify-content-between align-items-center w-full h-full flex-grow-1">
-                <div className="flex justify-content-center align-items-center mr-2 hover:underline cursor-pointer">
-                    Name
-                </div>
-                <div className="flex flex-shrink-0 ml-2 justify-content-center align-items-center">
-                    <div className="flex flex-column mx-2">
-                        <div className="flex justify-content-center align-items-center text-xs">
-                            {`Chaldean - Pythagorean`}
-                        </div>
-                        <div className="flex justify-content-center align-items-center w-full mt-1">
-                            <div className="bg-blue-200 px-1 mx-1 border-0 border-round text-sm">Total</div>
-                            <div className="bg-blue-300 px-1 mx-1 border-0 border-round text-sm">Actual</div>
-                        </div>
-                    </div>
-                    <div className="flex justify-content-center align-items-center flex-shrink-0 bg-red-100 px-1 mx-2 h-min border-0 border-round text-sm">
-                        Letter<br/>Count
-                    </div>
-                </div>
+    const columnValuesHeaderTemplate = (format: string) => {
+        return <div className="flex flex-column w-full">
+            <div className="mb-1 text-sm">{format}</div>
+            <div className="flex w-full">
+                <div className="flex justify-content-center align-items-center border-round-xl text-xs mr-1">Total</div>
+                <div className="flex justify-content-center align-items-center border-round-xl px-2 text-xs border-1">Actual</div>
             </div>
-        );
+        </div>
     }
 
-    // const columnValuesHeaderTemplate = (format: string) => {
-    //     return <div className="flex flex-column w-full">
-    //         <div className="mb-1 text-sm">{format}</div>
-    //         <div className="flex w-full">
-    //             <div className="flex justify-content-center align-items-center border-round-xl text-xs mr-1">Total</div>
-    //             <div className="flex justify-content-center align-items-center border-round-xl px-2 text-xs border-1">Actual</div>
-    //         </div>
-    //     </div>
-    // }
+    const chaldeanValuesBodyTemplate = (name: Name) => {
+        return <div className="flex">
+            <div className="flex w-2rem justify-content-center align-items-center border-round-xl mr-1">{name.chaldeanTotal}</div>
+            <div className="flex w-2rem justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-2rem ">{name.chaldeanActual}</div>
+        </div>
+    }
 
-    // const chaldeanValuesBodyTemplate = (name: Name) => {
-    //     return <div className="flex">
-    //         <div className="flex w-2rem justify-content-center align-items-center border-round-xl mr-1">{name.chaldeanTotal}</div>
-    //         <div className="flex w-2rem justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-2rem ">{name.chaldeanActual}</div>
-    //     </div>
-    // }
-
-    // const pythagoreanValuesBodyTemplate = (name: Name) => {
-    //     return <div className="flex w-full">
-    //         <div className="flex w-2rem justify-content-center align-items-center border-round-xl mr-1">{name.pythagoreanTotal}</div>
-    //         <div className="flex w-2rem justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-2rem ">{name.pythagoreanActual}</div>
-    //     </div>
-    // }
+    const pythagoreanValuesBodyTemplate = (name: Name) => {
+        return <div className="flex w-full">
+            <div className="flex w-2rem justify-content-center align-items-center border-round-xl mr-1">{name.pythagoreanTotal}</div>
+            <div className="flex w-2rem justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-2rem ">{name.pythagoreanActual}</div>
+        </div>
+    }
 
     return (
         <div className="">
@@ -225,8 +192,8 @@ const NamesTable = () => {
                     <div className="col-12 flex flex-column md:flex-row md:align-items-center">
                         <label className="mr-2 mb-2 md:mb-0">Chaldean Actual:</label>
                         <NumberPicker
-                            value={filters.chaldeanActual.value}
-                            min={1}
+                            value={filters.chaldeanActual.value} 
+                            min={1} 
                             max={9}
                             onChange={(value) =>
                                 setFilters((prevFilters: any) => ({
@@ -239,8 +206,8 @@ const NamesTable = () => {
                     <div className="col-12 flex flex-column md:flex-row md:align-items-center">
                         <label className="mr-2 mb-2 md:mb-0">Pythagorean Actual:</label>
                         <NumberPicker
-                            value={filters.pythagoreanActual.value}
-                            min={1}
+                            value={filters.pythagoreanActual.value} 
+                            min={1} 
                             max={9}
                             onChange={(value) =>
                                 setFilters((prevFilters: any) => ({
@@ -277,7 +244,7 @@ const NamesTable = () => {
                             className="w-full"
                         />
                     </div>
-                    <div className="col-12 grid">
+                    <div className="col-12 grid gap-1">
                         <label className='col'>Tags:</label>
                         {tags.map(tag => (
                             <div key={tag} className="flex col align-items-center">
@@ -333,9 +300,9 @@ const NamesTable = () => {
             </Dialog>
 
             <DataTable value={names} paginator rows={100} rowsPerPageOptions={[10, 25, 50, 100]} stripedRows showGridlines removableSort filters={filters} emptyMessage="No names found.">
-                <Column field="id" sortable header={nameValuesHeaderTemplate} headerClassName="full-width-header" headerStyle={{width: "100%"}} body={nameValueBodyTemplate} style={{ width: '100%', padding: '0.2rem 0.3rem' }} />
-                {/* <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
-                <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} /> */}
+                <Column field="id" header="Name" sortable body={nameValueBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
+                <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
+                <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
             </DataTable>
         </div>
     );
