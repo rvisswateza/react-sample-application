@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 } */
+
+.full-width-header {
+  width: 100%;
+}
+
+.full-width-header .p-column-title {
+  width: 100%;
+  display: block;
+}
