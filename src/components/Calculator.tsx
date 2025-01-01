@@ -31,7 +31,7 @@ const Calculator = () => {
         actual: 0
     };
     const [name, setName] = useState<string>("");
-    const [nameLength, setNameLength] = useState<number>(0);
+    const [letterCount, setLetterCount] = useState<number>(0);
     const [chaldeanValues, setChaldeanValues] = useState<CalculationResult>(defaultResult);
     const [pythagoreanValues, setPythagoreanValues] = useState<CalculationResult>(defaultResult);
     const [chaldeanLetterValues, setChaldeanLetterValues] = useState<string[]>([]);
@@ -134,7 +134,7 @@ const Calculator = () => {
         setTimeout(() => setDisplayMessage(null), 5000);
     };
 
-    async function saveNewName(name: string, tags: string[], pythagoreanValues: CalculationResult, chaldeanValues: CalculationResult) {
+    async function saveNewName(name: string, tags: string[], pythagoreanValues: CalculationResult, chaldeanValues: CalculationResult, letterCount: number) {
         setSaveDisabled(true);
         if (!name || (name && name === '')) {
             nameRef?.current?.focus();
@@ -161,6 +161,7 @@ const Calculator = () => {
             chaldeanConsonants: chaldeanValues.consonants,
             chaldeanTotal: chaldeanValues.total,
             chaldeanActual: chaldeanValues.actual,
+            letterCount: letterCount,
         };
 
         const existingRecord = await client.models.Names.get({ id: name });
@@ -182,7 +183,7 @@ const Calculator = () => {
         setChaldeanValues(calculateNumerology('Chaldean', name.toLowerCase()));
         setPythagoreanValues(calculateNumerology('Pythagorean', name.toLowerCase()));
         calculateLetterValues(name);
-        setNameLength(countAlphanumericCharacters(name));
+        setLetterCount(countAlphanumericCharacters(name));
     }, [name]);
 
     return (
@@ -200,7 +201,7 @@ const Calculator = () => {
                 />
                 <Badge
                     className='mt-2 ml-2'
-                    value={nameLength}
+                    value={letterCount}
                     size="large"
                 />
             </div>
@@ -276,7 +277,7 @@ const Calculator = () => {
                         icon="pi pi-save"
                         disabled={saveDisabled}
                         onClick={() => {
-                            saveNewName(name, selectedTags, pythagoreanValues, chaldeanValues);
+                            saveNewName(name, selectedTags, pythagoreanValues, chaldeanValues, letterCount);
                         }}
                     />
                 </div>
