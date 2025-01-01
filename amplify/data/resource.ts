@@ -13,6 +13,7 @@ const schema = a.schema({
       chaldeanTotal: a.integer().required(),
       pythagoreanActual: a.integer().required(),
       chaldeanActual: a.integer().required(),
+      letterCount: a.integer().required(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
