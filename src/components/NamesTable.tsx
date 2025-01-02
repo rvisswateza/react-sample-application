@@ -38,6 +38,7 @@ const NamesTable = () => {
         pythagoreanTotal: { value: null, matchMode: FilterMatchMode.EQUALS },
         chaldeanActual: { value: null, matchMode: FilterMatchMode.EQUALS },
         pythagoreanActual: { value: null, matchMode: FilterMatchMode.EQUALS },
+        letterCount: { value: null, matchMode: FilterMatchMode.EQUALS },
     });
     const tags = ["Male", "Female", "General", "Office", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
     const nameFilterDropdownOptions: DropdownOption[] = [
@@ -93,6 +94,7 @@ const NamesTable = () => {
             pythagoreanTotal: { value: null, matchMode: FilterMatchMode.EQUALS },
             chaldeanActual: { value: null, matchMode: FilterMatchMode.EQUALS },
             pythagoreanActual: { value: null, matchMode: FilterMatchMode.EQUALS },
+            letterCount: { value: null, matchMode: FilterMatchMode.EQUALS },
         });
     };
 
@@ -109,11 +111,11 @@ const NamesTable = () => {
             setNames(names.filter((item) => item.id !== name))
             return;
         };
-    
+
         const rejectDeletion = () => {
             return;
         };
-    
+
         const deleteName = (name: string) => {
             confirmDialog({
                 message: `Are you sure you want to delete ${name}?`,
@@ -192,8 +194,8 @@ const NamesTable = () => {
                     <div className="col-12 flex flex-column md:flex-row md:align-items-center">
                         <label className="mr-2 mb-2 md:mb-0">Chaldean Actual:</label>
                         <NumberPicker
-                            value={filters.chaldeanActual.value} 
-                            min={1} 
+                            value={filters.chaldeanActual.value}
+                            min={1}
                             max={9}
                             onChange={(value) =>
                                 setFilters((prevFilters: any) => ({
@@ -206,8 +208,8 @@ const NamesTable = () => {
                     <div className="col-12 flex flex-column md:flex-row md:align-items-center">
                         <label className="mr-2 mb-2 md:mb-0">Pythagorean Actual:</label>
                         <NumberPicker
-                            value={filters.pythagoreanActual.value} 
-                            min={1} 
+                            value={filters.pythagoreanActual.value}
+                            min={1}
                             max={9}
                             onChange={(value) =>
                                 setFilters((prevFilters: any) => ({
@@ -219,19 +221,32 @@ const NamesTable = () => {
                     </div>
                     <div className="col-12 flex flex-column md:flex-row md:align-items-center">
                         <label className="mr-2 mb-2 md:mb-0">Name:</label>
-                        <Dropdown
-                            value={nameFilterDropdownOptions.find((item) => item.code === filters.id.matchMode)}
-                            options={nameFilterDropdownOptions}
-                            onChange={(e) =>
-                                setFilters((prevFilters: any) => ({
-                                    ...prevFilters,
-                                    id: { ...prevFilters.id, matchMode: e.value.code }
-                                }))
-                            }
-                            optionLabel="name"
-                            placeholder="Select a filter mode"
-                            className="mr-2 mb-2 md:mb-0 w-full md:w-10rem"
-                        />
+                        <div className="flex w-full md:mr-2 mb-2 md:mb-0">
+                            <Dropdown
+                                value={nameFilterDropdownOptions.find((item) => item.code === filters.id.matchMode)}
+                                options={nameFilterDropdownOptions}
+                                onChange={(e) =>
+                                    setFilters((prevFilters: any) => ({
+                                        ...prevFilters,
+                                        id: { ...prevFilters.id, matchMode: e.value.code }
+                                    }))
+                                }
+                                optionLabel="name"
+                                placeholder="Select a filter mode"
+                                className="mr-2 w-full"
+                            />
+                            <InputText
+                                value={filters.letterCount.value}
+                                onChange={(e) =>
+                                    setFilters((prevFilters: any) => ({
+                                        ...prevFilters,
+                                        letterCount: { ...prevFilters.letterCount, value: e.target.value }
+                                    }))
+                                }
+                                placeholder="Name length"
+                                className="w-full"
+                            />
+                        </div>
                         <InputText
                             value={filters.id.value}
                             onChange={(e) =>
@@ -241,7 +256,7 @@ const NamesTable = () => {
                                 }))
                             }
                             placeholder="Search by name"
-                            className="w-full"
+                            className="mr-2 mb-2 md:mb-0 w-full"
                         />
                     </div>
                     <div className="col-12 grid gap-1">
@@ -300,9 +315,9 @@ const NamesTable = () => {
             </Dialog>
 
             <DataTable value={names} paginator rows={100} rowsPerPageOptions={[10, 25, 50, 100]} stripedRows showGridlines removableSort filters={filters} emptyMessage="No names found.">
-                <Column field="id" header="Name" sortable body={nameValueBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
-                <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
-                <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{padding: '0.2rem 0.3rem' }} />
+                <Column field="id" header="Name" sortable body={nameValueBodyTemplate} style={{ padding: '0.2rem 0.3rem' }} />
+                <Column field="chaldeanActual" header={columnValuesHeaderTemplate("Chaldean")} body={chaldeanValuesBodyTemplate} style={{ padding: '0.2rem 0.3rem' }} />
+                <Column field="pythagoreanActual" header={columnValuesHeaderTemplate("Pythagorean")} body={pythagoreanValuesBodyTemplate} style={{ padding: '0.2rem 0.3rem' }} />
             </DataTable>
         </div>
     );
