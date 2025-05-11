@@ -14,10 +14,12 @@ import { InputText } from "primereact/inputtext";
 import { MenuItem } from "primereact/menuitem";
 import { Menu } from "primereact/menu";
 import NumberPicker from "./NumberPicker.tsx";
+import { MultiSelect } from "primereact/multiselect";
 
 const client = generateClient<Schema>();
 
 type Name = Schema["Names"]["type"];
+type Tags = Schema["Tags"]["type"];
 type DropdownOption = { name: String, code: String }
 
 FilterService.register('custom_tags', (value, filters) => {
@@ -31,6 +33,8 @@ FilterService.register('custom_tags', (value, filters) => {
 const NamesTable = () => {
     const [names, setNames] = useState<Name[]>([]);
     const [viewName, setViewName] = useState<Name | null>(null);
+    const [tags, setTags] = useState<Tags[]>([]);
+    const [selectedTags, setSelectedTags] = useState<Tags[]>([]);
     const [filters, setFilters] = useState({
         id: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
         tags: { value: [''], matchMode: FilterMatchMode.CUSTOM },
@@ -40,7 +44,6 @@ const NamesTable = () => {
         pythagoreanActual: { value: null, matchMode: FilterMatchMode.EQUALS },
         letterCount: { value: null, matchMode: FilterMatchMode.EQUALS },
     });
-    const tags = ["Male", "Female", "General", "Office", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
     const nameFilterDropdownOptions: DropdownOption[] = [
         { name: 'Starts with', code: FilterMatchMode.STARTS_WITH },
         { name: 'Ends with', code: FilterMatchMode.ENDS_WITH },
@@ -53,22 +56,28 @@ const NamesTable = () => {
         setNames(response.data);
     };
 
+    const getTagsList = async () => {
+        const response = await client.models.Tags.list();
+        setTags(response.data);
+    };
+
     useEffect(() => {
         getNamesList();
+        getTagsList();
+        
     }, []);
 
-    const onTagChange = (e: CheckboxChangeEvent) => {
-        let updatedTags: string[] = [];
-        updatedTags = filters.tags.value || [];
+    useEffect(() => {
+        console.log("Filters: ", filters);
+    }, [filters]);
 
-        if (e.checked)
-            updatedTags.push(e.value);
-        else
-            updatedTags.splice(updatedTags.indexOf(e.value), 1);
+    const onTagChange = (e: CheckboxChangeEvent) => {
+        let updatedTags: string[] = e.value.map((tag: Tags) => tag.name);
+        setSelectedTags(e.value);
 
         setFilters((prevFilters: any) => ({
             ...prevFilters,
-            tags: { ...prevFilters.tags, value: updatedTags }
+            tags: { ...prevFilters.tags, value: ['', ...updatedTags] }
         }))
     };
 
@@ -262,16 +271,31 @@ const NamesTable = () => {
                     <div className="col-12 grid gap-1">
                         <label className='col'>Tags:</label>
                         {tags.map(tag => (
-                            <div key={tag} className="flex col align-items-center">
+                            <div key={tag.id} className="flex col align-items-center">
                                 <Checkbox
-                                    inputId={tag}
+                                    inputId={tag.id}
                                     value={tag}
                                     onChange={onTagChange}
-                                    checked={filters.tags.value && filters.tags.value.includes(tag)}
+                                    checked={filters.tags.value && filters.tags.value.includes(tag.name)}
                                 />
-                                <label htmlFor={tag} className="ml-2">{tag}</label>
+                                <label htmlFor={tag.name} className="ml-2">{tag.name}</label>
                             </div>
                         ))}
+                        <div className="flex gap-1 justify-content-left align-items-center w-full">
+                            <label htmlFor="hidden-tags" className="mb-1 white-space-nowrap">Hidden Tags:</label>
+                            <MultiSelect
+                                id="hidden-tags"
+                                value={selectedTags}
+                                options={tags}
+                                optionLabel="name"
+                                placeholder="Filter based on tags"
+                                filter
+                                filterPlaceholder='Search Tags'
+                                display="chip"
+                                className="w-full flex-grow-0"
+                                onChange={onTagChange}
+                            />
+                        </div>
                     </div>
                 </div>
             </Panel>

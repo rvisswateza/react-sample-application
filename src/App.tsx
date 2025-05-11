@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Calculator from "./components/Calculator.tsx";
 import Navbar from "./components/Navbar.tsx";
 import NamesTable from "./components/NamesTable.tsx";
+import TagsView from "./components/TagsView.tsx";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
             <Routes>
               <Route index path="/calculator" element={<Calculator />} />
               <Route index path="/names" element={<NamesTable />} />
+              <Route index path="/tags" element={<TagsView />} />
               <Route path="*" element={<Navigate to="/calculator" />} />
             </Routes>
           </BrowserRouter>
