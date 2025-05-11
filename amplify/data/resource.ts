@@ -22,6 +22,7 @@ const schema = a.schema({
     name: a.string().required(),
     display: a.boolean().default(false),
   })
+  .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
