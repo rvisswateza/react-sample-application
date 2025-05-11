@@ -155,17 +155,17 @@ const NamesTable = () => {
         ];
 
         return (
-            <div className="flex justify-content-between align-items-center">
+            <div className="flex justify-content-left align-items-center">
                 <Menu model={actionItems} popup ref={menuRef} id={`${name}-action-menu`} />
                 <div
-                    className="flex justify-content-center align-items-center mr-1 hover:underline cursor-pointer"
+                    className="flex justify-content-center align-items-center hover:underline cursor-pointer mr-2"
                     onClick={(e) => menuRef.current?.toggle(e)}
                     aria-controls={`${name}-action-menu`}
                     aria-haspopup
                 >
                     {name.id}
                 </div>
-                <div className="flex justify-content-center align-items-center border-round-xl border-1 h-min flex-shrink-0 w-2rem ">
+                <div className="flex justify-content-center align-items-center border-noround border-1 h-min flex-shrink-0 w-2rem ">
                     {countAlphanumericCharacters(name.id)}
                 </div>
             </div>
@@ -269,7 +269,7 @@ const NamesTable = () => {
                         />
                     </div>
                     <div className="col-12 grid gap-1">
-                        <label className='col'>Tags:</label>
+                        {/* <label className='col'>Tags:</label>
                         {tags.map(tag => (
                             <div key={tag.id} className="flex col align-items-center">
                                 <Checkbox
@@ -280,7 +280,7 @@ const NamesTable = () => {
                                 />
                                 <label htmlFor={tag.name} className="ml-2">{tag.name}</label>
                             </div>
-                        ))}
+                        ))} */}
                         <div className="flex gap-1 justify-content-left align-items-center w-full">
                             <label htmlFor="hidden-tags" className="mb-1 white-space-nowrap">Hidden Tags:</label>
                             <MultiSelect
