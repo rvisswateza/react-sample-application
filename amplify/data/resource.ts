@@ -16,6 +16,13 @@ const schema = a.schema({
       letterCount: a.integer().required(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  
+  Tags: a.model({
+    id: a.id().required(),
+    name: a.string().required(),
+    display: a.boolean().default(false),
+  })
+  .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

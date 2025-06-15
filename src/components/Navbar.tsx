@@ -23,6 +23,10 @@ const Navbar = () => {
                     >Calculator</a>
                     <a
                         className="mx-1 p-2 h-full cursor-pointer text-white no-underline hover:underline"
+                        href="/tags"
+                    >Tags</a>
+                    <a
+                        className="mx-1 p-2 h-full cursor-pointer text-white no-underline hover:underline"
                         href="/names"
                     >Names</a>
                 </div>

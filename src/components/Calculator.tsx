@@ -8,8 +8,11 @@ import { generateClient } from "aws-amplify/data";
 import { Button } from 'primereact/button';
 import { Checkbox, CheckboxChangeEvent } from 'primereact/checkbox';
 import { Message } from 'primereact/message';
+import { MultiSelect } from 'primereact/multiselect';
 
 const client = generateClient<Schema>();
+
+type Tags = Schema["Tags"]["type"];
 
 type CalculationResult = {
     vowels: number;
@@ -36,22 +39,29 @@ const Calculator = () => {
     const [pythagoreanValues, setPythagoreanValues] = useState<CalculationResult>(defaultResult);
     const [chaldeanLetterValues, setChaldeanLetterValues] = useState<string[]>([]);
     const [pythagoreanLetterValues, setPythagoreanLetterValues] = useState<string[]>([]);
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [selectedVisibleTags, setSelectedVisibleTags] = useState<Tags[]>([]);
+    const [selectedInvisibleTags, setSelectedInvisibleTags] = useState<Tags[]>([]);
     const [saveDisabled, setSaveDisabled] = useState<boolean>(false);
     const [displayMessage, setDisplayMessage] = useState<DisplayMessage | null>(null);
+    const [tags, setTags] = useState<Tags[]>([]);
     const nameRef = useRef<HTMLInputElement>(null);
     const tagsRef = useRef<any>(null);
 
-    const tags = ["Male", "Female", "General", "Office", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
+    // const tags = ["Male", "Female", "General", "Office", "School", "College", "Hospital", "Shop", "Market", "Cafe"];
 
-    const onTagChange = (e: CheckboxChangeEvent) => {
-        let updatedTags = [...selectedTags];
+    const onVisibleTagChange = (e: CheckboxChangeEvent) => {
+        let updatedTags = [...selectedVisibleTags];
+        console.log("Checkbox Value: ", e.value);
 
         if (e.checked) updatedTags.push(e.value);
         else updatedTags.splice(updatedTags.indexOf(e.value), 1);
 
-        setSelectedTags(updatedTags);
+        setSelectedVisibleTags(updatedTags);
     };
+
+    const onInvisibleTagChange = (e: CheckboxChangeEvent) => {
+        setSelectedInvisibleTags(e.value);
+    }
 
     const cellStyle = "my-1 align-items-center justify-content-center h-2rem";
 
@@ -175,7 +185,8 @@ const Calculator = () => {
         }
 
         setName('');
-        setSelectedTags([]);
+        setSelectedVisibleTags([]);
+        setSelectedInvisibleTags([]);
         setSaveDisabled(false);
     }
 
@@ -185,6 +196,15 @@ const Calculator = () => {
         calculateLetterValues(name);
         setLetterCount(countAlphanumericCharacters(name));
     }, [name]);
+
+    const getTagsList = async () => {
+        const response = await client.models.Tags.list();
+        setTags(response.data);
+    };
+
+    useEffect(() => {
+        getTagsList();
+    }, [])
 
     return (
         <div className='flex flex-column m-2 p-2 justify-content-center shadow-3 border-round-md surface-100'>
@@ -252,20 +272,35 @@ const Calculator = () => {
                     </div>
                 ))}
             </div>
-            <div className='mt-2 flex flex-column w-full p-2 justify-content-between align-items-center'>
-                <div className="grid gap-1">
+            <div className='mt-2 flex flex-column w-full p-2 justify-content-between align-items-left'>
+                <div className="grid gap-1 justify-content-left">
                     <label className='col'>Tags:</label>
-                    {tags.map(tag => (
-                        <div key={tag} className="flex col align-items-center">
+                    {tags.filter((tag) => tag.display).map(tag => (
+                        <div key={tag.id} className="flex col align-items-center">
                             <Checkbox
-                                inputId={tag}
+                                inputId={tag.id}
                                 value={tag}
-                                onChange={onTagChange}
-                                checked={selectedTags.includes(tag)}
+                                onChange={onVisibleTagChange}
+                                checked={selectedVisibleTags.includes(tag)}
                             />
-                            <label htmlFor={tag} className="ml-2">{tag}</label>
+                            <label htmlFor={tag.name} className="ml-2">{tag.name}</label>
                         </div>
                     ))}
+                </div>
+                <div className="flex gap-1 justify-content-left align-items-center w-full">
+                    <label htmlFor="hidden-tags" className="mb-1 white-space-nowrap">Hidden Tags:</label>
+                    <MultiSelect
+                        id="hidden-tags"
+                        value={selectedInvisibleTags.filter((tag) => !tag.display)}
+                        options={tags.filter((tag) => !tag.display)}
+                        optionLabel="name"
+                        placeholder="Select Hidden Tags"
+                        filter
+                        filterPlaceholder='Search Tags'
+                        display="chip"
+                        className="w-full flex-grow-0"
+                        onChange={onInvisibleTagChange}
+                    />
                 </div>
                 <div className='flex justify-content-between align-items-center w-full mt-1'>
                     <div className=''>
@@ -277,7 +312,13 @@ const Calculator = () => {
                         icon="pi pi-save"
                         disabled={saveDisabled}
                         onClick={() => {
-                            saveNewName(name, selectedTags, pythagoreanValues, chaldeanValues, letterCount);
+                            saveNewName(
+                                name, 
+                                [...selectedVisibleTags.map((tag) => tag.name), ...selectedInvisibleTags.map((tag) => tag.name)], 
+                                pythagoreanValues, 
+                                chaldeanValues, 
+                                letterCount
+                            );
                         }}
                     />
                 </div>
