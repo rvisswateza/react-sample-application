@@ -165,8 +165,8 @@ const NamesTable = () => {
                 >
                     {name.id}
                 </div>
-                <div className="flex justify-content-center align-items-center border-noround border-1 h-min flex-shrink-0 w-2rem ">
-                    {countAlphanumericCharacters(name.id)}
+                <div className="flex justify-content-center align-items-center h-min flex-shrink-0">
+                    ({countAlphanumericCharacters(name.id)})
                 </div>
             </div>
         );
